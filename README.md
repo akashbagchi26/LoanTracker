@@ -16,7 +16,7 @@
     <tr>
       <td align="center" width="33%">
         <img src="./docs/assets/dashboard.png" width="240" alt="Dashboard"/>
-        <p>>Real-time financial summaries and metrics.</p>
+        <p>Real-time financial summaries and metrics.</p>
       </td>
       <td align="center" width="33%">
         <img src="./docs/assets/loan_management.png" width="240" alt="Loan Management"/>
