@@ -119,7 +119,7 @@ export const useLoanStore = create<LoanStore>()(
         set({ isLoading: true, error: null });
         try {
           const response = await new Promise<Loan[]>((resolve) =>
-            setTimeout(() => resolve(initialLoans), 1000)
+            setTimeout(() => resolve(initialLoans), 1000),
           );
 
           set({ loans: response, isLoading: false });
@@ -138,6 +138,6 @@ export const useLoanStore = create<LoanStore>()(
       name: "loan-storage",
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({ loans: state.loans }),
-    }
-  )
+    },
+  ),
 );

@@ -1,8 +1,19 @@
-import React from 'react';
-import { Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { useAuth } from '@/hooks/api/useAuth';
-import { useRouter } from 'expo-router';
+import React from "react";
+import {
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  View,
+} from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import { useAuth } from "@/hooks/api/useAuth";
+import { useRouter } from "expo-router";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 type FormData = {
   name: string;
@@ -14,112 +25,198 @@ type FormData = {
 export default function EditProfileScreen() {
   const { user } = useAuth();
   const router = useRouter();
+  const theme = useColorScheme();
+  const colors = Colors[theme];
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
-      oldPassword: user?.oldPassword || '',
-      newPassword: user?.newPassword || '',
+      name: user?.name || "",
+      email: user?.email || "",
+      oldPassword: user?.oldPassword || "",
+      newPassword: user?.newPassword || "",
     },
   });
 
   const onSubmit = (data: FormData) => {
     console.log("Updated Profile:", data);
-    Alert.alert("Profile Updated", "Your profile has been successfully updated.");
+    Alert.alert(
+      "Profile Updated",
+      "Your profile has been successfully updated.",
+    );
     router.back();
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Name Field */}
-      <Controller
-        control={control}
-        name="name"
-        rules={{ required: 'Name is required' }}
-        render={({ field: { onChange, value } }) => (
-          <>
-            <TextInput
-              style={[styles.input, errors.name && styles.errorInput]}
-              placeholder="Name"
-              value={value}
-              onChangeText={onChange}
-            />
-            {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
-          </>
-        )}
-      />
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        { backgroundColor: colors.background },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      <View
+        style={[
+          styles.infoBox,
+          { backgroundColor: colors.card, borderColor: colors.border },
+        ]}
+      >
+        <Text style={[styles.sectionLabel, { color: colors.secondaryText }]}>
+          Personal Details
+        </Text>
 
-      {/* Email Field */}
-      <Controller
-        control={control}
-        name="email"
-        rules={{
-          required: 'Email is required',
-          pattern: {
-            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Invalid email format',
+        <View style={styles.inputGroup}>
+          <Text style={[styles.label, { color: colors.secondaryText }]}>
+            Full Name
+          </Text>
+          <Controller
+            control={control}
+            name="name"
+            rules={{ required: "Name is required" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Name"
+                placeholderTextColor={colors.secondaryText}
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+          {errors.name && (
+            <Text style={[styles.errorText, { color: colors.error }]}>
+              {errors.name.message}
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={[styles.label, { color: colors.secondaryText }]}>
+            Email
+          </Text>
+          <Controller
+            control={control}
+            name="email"
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Invalid format",
+              },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="Email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+        </View>
+      </View>
+
+      <View
+        style={[
+          styles.infoBox,
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+            marginTop: 20,
           },
-        }}
-        render={({ field: { onChange, value } }) => (
-          <>
-            <TextInput
-              style={[styles.input, errors.email && styles.errorInput]}
-              placeholder="Email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={value}
-              onChangeText={onChange}
-            />
-            {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-          </>
-        )}
-      />
+        ]}
+      >
+        <Text style={[styles.sectionLabel, { color: colors.secondaryText }]}>
+          Security
+        </Text>
 
-      {/* Enter Old Password Field */}
-      <Controller
-        control={control}
-        name="oldPassword"
-        rules={{
-          required: 'Old Password is required',
-          minLength: { value: 10, message: 'Must be your old password' },
-        }}
-        render={({ field: { onChange, value } }) => (
-          <>
-            <TextInput
-              style={[styles.input, errors.oldPassword && styles.errorInput]}
-              placeholder="Enter Old Password"
-              value={value}
-              onChangeText={onChange}
-            />
-            {errors.oldPassword && <Text style={styles.errorText}>{errors.oldPassword.message}</Text>}
-          </>
-        )}
-      />
+        <View style={styles.inputGroup}>
+          <Text style={[styles.label, { color: colors.secondaryText }]}>
+            Old Password
+          </Text>
+          <Controller
+            control={control}
+            name="oldPassword"
+            rules={{ required: "Old Password is required" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="••••••••••"
+                placeholderTextColor={colors.secondaryText}
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+        </View>
 
-      {/* Enter New Password Field */}
-      <Controller
-        control={control}
-        name="newPassword"
-        rules={{
-          required: 'New Password is required',
-          minLength: { value: 10, message: 'Must be a new password' },
-        }}
-        render={({ field: { onChange, value } }) => (
-          <>
-            <TextInput
-              style={[styles.input, errors.newPassword && styles.errorInput]}
-              placeholder="Enter New Password"
-              value={value}
-              onChangeText={onChange}
-            />
-            {errors.newPassword && <Text style={styles.errorText}>{errors.newPassword.message}</Text>}
-          </>
-        )}
-      />
+        <View style={styles.inputGroup}>
+          <Text style={[styles.label, { color: colors.secondaryText }]}>
+            New Password
+          </Text>
+          <Controller
+            control={control}
+            name="newPassword"
+            rules={{ minLength: { value: 6, message: "Min 6 characters" } }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.border,
+                    color: colors.text,
+                  },
+                ]}
+                placeholder="••••••••••"
+                placeholderTextColor={colors.secondaryText}
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+              />
+            )}
+          />
+        </View>
+      </View>
 
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: colors.primary }]}
+        onPress={handleSubmit(onSubmit)}
+        activeOpacity={0.8}
+      >
+        <Ionicons
+          name="checkmark-circle"
+          size={20}
+          color="#fff"
+          style={{ marginRight: 8 }}
+        />
         <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -129,42 +226,57 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#f4f4f4',
     flexGrow: 1,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
+  infoBox: {
+    padding: 20,
+    borderRadius: 24,
+    borderWidth: 1,
+  },
+  sectionLabel: {
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 1,
     marginBottom: 20,
-    color: '#222',
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: "700",
+    marginBottom: 6,
+    marginLeft: 4,
   },
   input: {
-    backgroundColor: '#fff',
     padding: 14,
-    borderRadius: 10,
-    marginBottom: 10,
+    borderRadius: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  errorInput: {
-    borderColor: '#E53935',
+    fontWeight: "600",
   },
   errorText: {
-    color: '#E53935',
-    marginBottom: 8,
-    fontSize: 13,
+    fontSize: 12,
+    fontWeight: "700",
+    marginTop: 4,
+    marginLeft: 4,
   },
   button: {
-    backgroundColor: '#00C853',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
+    padding: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    marginTop: 30,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "800",
   },
 });

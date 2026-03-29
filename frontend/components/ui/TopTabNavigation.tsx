@@ -1,6 +1,8 @@
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -15,42 +17,39 @@ type Props = {
 };
 
 export default function TopTabNavigation({ tabs }: Props) {
+  const theme = useColorScheme();
+  const colors = Colors[theme];
+
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarScrollEnabled: true,
         tabBarLabelStyle: {
-          fontWeight: '700',
-          textAlign: 'left',
+          fontWeight: "700",
           fontSize: 14,
-          textTransform: 'none',
-        },
-        tabBarItemStyle: {
-          width: 'auto',
-          alignItems: 'flex-start',
+          textTransform: "none",
         },
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: colors.background,
           elevation: 0,
-          borderBottomWidth: 0.1,
-          borderBottomColor: '#e0e0e0',
+          shadowOpacity: 0,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border,
         },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.secondaryText,
         tabBarIndicatorStyle: {
-          backgroundColor: '#000',
-          height: 1,
-          marginLeft: 10,
-          width: 'auto',
+          backgroundColor: colors.primary,
+          height: 3,
+          borderRadius: 3,
         },
       }}
     >
       {tabs.map((tab) => {
         const ScreenComponent = () => (
-          <View style={styles.tabScreen}>
-            {typeof tab.content === 'string' ? (
-              <Text style={styles.tabText}>{tab.content}</Text>
-            ) : (
-              tab.content
-            )}
+          <View
+            style={[styles.tabScreen, { backgroundColor: colors.background }]}
+          >
+            {tab.content}
           </View>
         );
 
@@ -70,13 +69,10 @@ export default function TopTabNavigation({ tabs }: Props) {
 const styles = StyleSheet.create({
   tabScreen: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
-    paddingTop: 10
+    paddingTop: 10,
   },
   tabText: {
     fontSize: 16,
-    textAlign: 'center',
-    color: '#333',
+    textAlign: "center",
   },
 });
-

@@ -1,56 +1,58 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router";
+import React from "react";
+import { Platform } from "react-native";
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { HapticTab } from "@/components/HapticTab";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import TabBarBackground from "@/components/ui/TabBarBackground";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const theme = useColorScheme();
+  const colors = Colors[theme];
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.secondaryText,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            position: 'absolute',
+            position: "absolute",
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
           },
-          default: {},
+          default: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+          },
         }),
-      }}>
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: "700",
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="house.fill" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="loan"
         options={{
-          title: 'Loan',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="banknote.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="loanChain"
-        options={{
-          title: 'Loan Chain',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="repaymentLog"
-        options={{
-          title: 'Repayment Log',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: "Loans",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="banknote.fill" color={color} />
+          ),
         }}
       />
     </Tabs>

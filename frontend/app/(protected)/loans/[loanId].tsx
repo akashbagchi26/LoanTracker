@@ -10,16 +10,32 @@ import {
   View,
 } from "react-native";
 import { useFetchLoanById } from "@/hooks/api/useFetchLoan";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function LoanDetailsPage() {
   const router = useRouter();
+  const theme = useColorScheme();
+  const colors = Colors[theme];
   const { loanId } = useLocalSearchParams<{ loanId: string }>();
   const { data: loan } = useFetchLoanById(loanId);
 
   const sheetRef = useRef<BottomSheet>(null);
 
   if (!loan) {
-    return <Text style={styles.error}>Loan not found.</Text>;
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: colors.background, justifyContent: "center" },
+        ]}
+      >
+        <Text style={[styles.error, { color: colors.error }]}>
+          Loan not found.
+        </Text>
+      </View>
+    );
   }
 
   const {
@@ -38,139 +54,202 @@ export default function LoanDetailsPage() {
   const { repayment_type, emi_date } = repayment_details;
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        {/* Loan Header */}
-        <View style={styles.card}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Loan Header Card */}
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
           <View style={styles.headerRow}>
-            <Text style={styles.title}>{loan.purpose}</Text>
+            <View>
+              <Text style={[styles.title, { color: colors.text }]}>
+                {loan.purpose || "Loan Details"}
+              </Text>
+              <Text style={[styles.typeText, { color: colors.secondaryText }]}>
+                {repayment_type?.toUpperCase()} •{" "}
+                {loan.loan_type?.replace("_", " ")}
+              </Text>
+            </View>
             <View
               style={[
                 styles.badge,
-                loan_status === "active"
-                  ? styles.active
-                  : loan_status === "closed"
-                    ? styles.closed
-                    : styles.overdue,
+                {
+                  backgroundColor:
+                    loan_status === "active"
+                      ? colors.success + "20"
+                      : colors.secondaryText + "20",
+                },
               ]}
             >
-              <Text style={styles.badgeText}>{loan_status.toUpperCase()}</Text>
+              <Text
+                style={[
+                  styles.badgeText,
+                  {
+                    color:
+                      loan_status === "active"
+                        ? colors.success
+                        : colors.secondaryText,
+                  },
+                ]}
+              >
+                {loan_status.toUpperCase()}
+              </Text>
             </View>
           </View>
-          <Text style={styles.amount}>
-            ₹{loan_amount_details.total_outstanding.toLocaleString()}
-          </Text>
-          <Text style={styles.subLabel}>
-            Outstanding • {repayment_type === "emi" ? "EMI" : "Due"} Date:{" "}
-            {emi_date?.toLocaleString() ?? "N/A"}
-            {repayment_type === "emi" && " of every week"}
-          </Text>
+
+          <View style={styles.amountSection}>
+            <Text style={[styles.amountLabel, { color: colors.secondaryText }]}>
+              Outstanding Balance
+            </Text>
+            <Text style={[styles.amount, { color: colors.text }]}>
+              ₹{loan_amount_details.total_outstanding.toLocaleString()}
+            </Text>
+          </View>
+
+          <View style={[styles.infoBar, { backgroundColor: colors.surface }]}>
+            <Ionicons
+              name="calendar-outline"
+              size={16}
+              color={colors.primary}
+            />
+            <Text style={[styles.infoBarText, { color: colors.secondaryText }]}>
+              Next Due:{" "}
+              <Text style={{ color: colors.text, fontWeight: "700" }}>
+                {emi_date || "N/A"}
+              </Text>
+            </Text>
+          </View>
         </View>
 
-        {/* EMI / Loan Details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Repayment Details</Text>
-          <View style={styles.row}>
-            <Text style={styles.label}>Sanctioned</Text>
-            <Text style={styles.value}>
+        {/* Financial Highlights */}
+        <View style={styles.statsGrid}>
+          <View
+            style={[
+              styles.statCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>
+              Sanctioned
+            </Text>
+            <Text style={[styles.statValue, { color: colors.text }]}>
               ₹{loan_amount_details.principal_sanction.toLocaleString()}
             </Text>
           </View>
-          {repayment_details.emi_amount && repayment_details.tenure_month && (
-            <>
-              <View style={styles.row}>
-                <Text style={styles.label}>EMI Amount</Text>
-                <Text style={styles.value}>
-                  ₹{repayment_details.emi_amount?.toFixed(2)}
-                </Text>
-              </View>
-              <View style={styles.row}>
-                <Text style={styles.label}>Tenure</Text>
-                <Text style={styles.value}>
-                  {repayment_details.tenure_month} months
-                </Text>
-              </View>
-            </>
-          )}
-          <View style={styles.row}>
-            <Text style={styles.label}>Paid</Text>
-            <Text style={styles.value}>
+          <View
+            style={[
+              styles.statCard,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
+            <Text style={[styles.statLabel, { color: colors.secondaryText }]}>
+              Paid So Far
+            </Text>
+            <Text style={[styles.statValue, { color: colors.success }]}>
               ₹{loan_amount_details.total_amount_paid.toLocaleString()}
             </Text>
           </View>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${progress}%` }]} />
-          </View>
-          <Text style={styles.progressText}>{progress?.toFixed(0)}% Paid</Text>
         </View>
 
-        {/* Interest Info */}
-        {repayment_details.repayment_type === "emi" && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Interest Details</Text>
-            <View style={styles.row}>
-              <Text style={styles.label}>Rate</Text>
-              <Text style={styles.value}>
-                {interest_rate_details.rate_pa}% p.a.
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Type</Text>
-              <Text style={styles.value}>
-                {interest_rate_details.rate_type}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Outstanding Interest</Text>
-              <Text style={styles.value}>
-                ₹{loan_amount_details.interest_outstanding.toLocaleString()}
-              </Text>
-            </View>
+        {/* Repayment Progress */}
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Repayment Progress
+            </Text>
+            <Text style={[styles.progressPercent, { color: colors.primary }]}>
+              {progress?.toFixed(0)}%
+            </Text>
           </View>
-        )}
+          <View
+            style={[styles.progressBar, { backgroundColor: colors.surface }]}
+          >
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${progress}%`, backgroundColor: colors.primary },
+              ]}
+            />
+          </View>
+        </View>
 
-        {/* Timeline */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Payment Timeline</Text>
-          <View style={styles.timelineItem}>
-            <View style={styles.dot} />
-            <Text style={styles.timelineText}>
-              Loan Created on{" "}
-              {loan.distribution_date
+        {/* Detailed Breakdown */}
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: colors.text, marginBottom: 16 },
+            ]}
+          >
+            Loan Details
+          </Text>
+
+          {repayment_details.emi_amount ? (
+            <DetailRow
+              label="Monthly EMI"
+              value={`₹${repayment_details.emi_amount.toLocaleString()}`}
+              colors={colors}
+            />
+          ) : null}
+          {repayment_details.tenure_month ? (
+            <DetailRow
+              label="Tenure"
+              value={`${repayment_details.tenure_month} Months`}
+              colors={colors}
+            />
+          ) : null}
+
+          <DetailRow
+            label="Interest Rate"
+            value={`${interest_rate_details.rate_pa}% (${interest_rate_details.rate_type})`}
+            colors={colors}
+          />
+          <DetailRow
+            label="Created On"
+            value={
+              loan.distribution_date
                 ? new Date(loan.distribution_date).toLocaleDateString()
-                : "N/A"}
-            </Text>
-          </View>
-          <View style={styles.timelineItem}>
-            <View style={[styles.dot, { backgroundColor: "#2196F3" }]} />
-            <Text style={styles.timelineText}>
-              Total Paid: ₹
-              {loan_amount_details.total_amount_paid.toLocaleString()}
-            </Text>
-          </View>
+                : "N/A"
+            }
+            colors={colors}
+            isLast
+          />
         </View>
 
-        {/* CTA Buttons */}
+        {/* Action Buttons */}
         <View style={styles.buttonGroup}>
           <TouchableOpacity
-            style={styles.buttonPrimary}
+            activeOpacity={0.8}
+            style={[styles.buttonPrimary, { backgroundColor: colors.primary }]}
             onPress={() => sheetRef.current?.expand()}
           >
-            <Text style={styles.buttonPrimaryText}>Pay Now</Text>
+            <Ionicons
+              name="card-outline"
+              size={20}
+              color="#fff"
+              style={{ marginRight: 8 }}
+            />
+            <Text style={styles.buttonPrimaryText}>Make a Payment</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={styles.buttonSecondary}
-            onPress={() =>
-              router.push({
-                pathname: "/(protected)/loans/add-loan",
-                params: { existingLoan: JSON.stringify(loan) },
-              })
-            }
-          >
-            <Text style={styles.buttonSecondaryText}>Edit Loan</Text>
-          </TouchableOpacity> */}
         </View>
       </ScrollView>
+
       <MyBottomSheet
         ref={sheetRef}
         loanId={loanId}
@@ -185,96 +264,124 @@ export default function LoanDetailsPage() {
   );
 }
 
+const DetailRow = ({ label, value, colors, isLast = false }: any) => (
+  <View
+    style={[
+      styles.row,
+      !isLast && {
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+        paddingBottom: 12,
+        marginBottom: 12,
+      },
+    ]}
+  >
+    <Text style={[styles.label, { color: colors.secondaryText }]}>{label}</Text>
+    <Text style={[styles.value, { color: colors.text }]}>{value}</Text>
+  </View>
+);
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F6F8FA", padding: 16 },
+  container: { flex: 1 },
+  scrollContent: { padding: 20, paddingBottom: 100 },
   card: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 16,
-    elevation: 3,
-    marginBottom: 16,
+    padding: 24,
+    borderRadius: 24,
+    borderWidth: 1,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    elevation: 5,
   },
-  headerRow: { flexDirection: "row", justifyContent: "space-between" },
-  title: { fontSize: 20, fontWeight: "600", color: "#222" },
-  amount: { fontSize: 28, fontWeight: "700", color: "#2E7D32", marginTop: 6 },
-  subLabel: { fontSize: 14, color: "#555", marginTop: 4 },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  title: { fontSize: 22, fontWeight: "800", letterSpacing: -0.5 },
+  typeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    marginTop: 4,
+    letterSpacing: 0.5,
+  },
+
+  amountSection: { marginTop: 24 },
+  amountLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  },
+  amount: { fontSize: 36, fontWeight: "900", marginTop: 4, letterSpacing: -1 },
+
+  infoBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    borderRadius: 12,
+    marginTop: 20,
+  },
+  infoBarText: { fontSize: 14, marginLeft: 8, fontWeight: "500" },
 
   badge: {
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  badgeText: { fontSize: 12, fontWeight: "600", color: "#fff" },
-  active: { backgroundColor: "#2E7D32" },
-  closed: { backgroundColor: "#9E9E9E" },
-  overdue: { backgroundColor: "#D32F2F" },
+  badgeText: { fontSize: 11, fontWeight: "800" },
+
+  statsGrid: { flexDirection: "row", gap: 12, marginBottom: 20 },
+  statCard: { flex: 1, padding: 16, borderRadius: 20, borderWidth: 1 },
+  statLabel: { fontSize: 12, fontWeight: "600", marginBottom: 4 },
+  statValue: { fontSize: 16, fontWeight: "800" },
 
   section: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
+    padding: 20,
+    borderRadius: 24,
+    borderWidth: 1,
+    marginBottom: 20,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
-    color: "#333",
   },
+  sectionTitle: { fontSize: 16, fontWeight: "800" },
+  progressPercent: { fontSize: 16, fontWeight: "800" },
+
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginVertical: 6,
+    alignItems: "center",
   },
-  label: { fontSize: 14, color: "#555" },
-  value: { fontSize: 14, fontWeight: "500", color: "#222" },
+  label: { fontSize: 14, fontWeight: "600" },
+  value: { fontSize: 14, fontWeight: "700" },
 
   progressBar: {
-    height: 8,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 4,
-    marginTop: 10,
+    height: 10,
+    borderRadius: 5,
     overflow: "hidden",
   },
-  progressFill: { height: "100%", backgroundColor: "#2E7D32" },
-  progressText: { fontSize: 12, color: "#666", marginTop: 4 },
+  progressFill: { height: "100%" },
 
-  timelineItem: {
+  buttonGroup: { marginTop: 10 },
+  buttonPrimary: {
+    height: 60,
+    borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 8,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#4CAF50",
-    marginRight: 10,
-  },
-  timelineText: { fontSize: 13, color: "#555" },
-
-  buttonGroup: {
-    flexDirection: "row",
-    gap: 12,
     justifyContent: "center",
-    marginBottom: 40,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
   },
-  buttonPrimary: {
-    backgroundColor: "#2E7D32",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-  },
-  buttonPrimaryText: { color: "#fff", fontWeight: "600" },
-  buttonSecondary: {
-    borderWidth: 1,
-    borderColor: "#BDBDBD",
-    backgroundColor: "#fff",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-  },
-  buttonSecondaryText: { color: "#333", fontWeight: "600" },
+  buttonPrimaryText: { color: "#fff", fontWeight: "800", fontSize: 16 },
 
-  error: { color: "red", fontSize: 16, textAlign: "center", marginTop: 20 },
+  error: { fontSize: 16, fontWeight: "700", textAlign: "center" },
 });

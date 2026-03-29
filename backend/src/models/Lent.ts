@@ -16,7 +16,7 @@ const lentSchema = new Schema(
       total_monthly_payment_due: { type: Number, default: 0 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Lent", lentSchema);

@@ -7,11 +7,20 @@ import CloseLoans from "../loans/close-loans";
 import UpcomingLoans from "../loans/upcomingLoan";
 import LendBorrowButtons from "@/components/LendBorrowButtons";
 import { useFetchStats } from "@/hooks/api/useFetchStats";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 
 export default function HomeScreen() {
   const { data } = useFetchStats();
+  const theme = useColorScheme();
+  const colors = Colors[theme];
 
-  const stats = data?.data || "";
+  const stats = data || {
+    totalLent: 0,
+    totalBorrower: 0,
+    totalInterestEarned: 0,
+    totalDuePayments: 0,
+  };
 
   const tab = [
     { name: "Active", title: "Active", content: <ActiveLoans /> },
@@ -20,34 +29,19 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.cardGrid}>
         <CardButton
           title="Total Lent"
           subtitle={`₹ ${stats.totalLent}`}
           iconName="arrow-up"
-          color="green.button"
-        />
-        <CardButton
-          title="Total Borrowed"
-          subtitle={`₹ ${stats.totalBorrower}`}
-          iconName="arrow-down"
-          color="ocean.button"
-        />
-      </View>
-
-      <View style={styles.cardGrid}>
-        <CardButton
-          title="Interest Earned"
-          subtitle={`₹ ${stats.totalInterestEarned}`}
-          iconName="percentage"
-          color="lavender.button"
+          color="success"
         />
         <CardButton
           title="Due Payments"
           subtitle={`₹ ${stats.totalDuePayments}`}
           iconName="exclamation"
-          color="grass.button"
+          color="error"
         />
       </View>
 
@@ -60,13 +54,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 5,
-    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+    paddingTop: 10,
   },
   cardGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 12,
   },
 });

@@ -1,23 +1,33 @@
 import { router, Stack } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 
 export default function AuthLayout() {
+  const theme = useColorScheme();
+  const colors = Colors[theme];
+
   return (
     <Stack
       screenOptions={{
         headerTitleAlign: "center",
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerShadowVisible: false,
         headerTitleStyle: {
           fontSize: 18,
-          fontWeight: "500",
-          color: "black",
+          fontWeight: "800",
+          color: colors.text,
         },
         headerLeft: ({ canGoBack }) =>
           canGoBack ? (
             <TouchableOpacity
               onPress={() => router.back()}
-              style={styles.headerRightContainer}
+              style={[styles.backBtn, { backgroundColor: colors.surface }]}
             >
-              <Text style={styles.saveButton}>Back</Text>
+              <Ionicons name="chevron-back" size={20} color={colors.text} />
             </TouchableOpacity>
           ) : null,
       }}
@@ -33,16 +43,12 @@ export default function AuthLayout() {
 }
 
 const styles = StyleSheet.create({
-  headerRightContainer: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: "rgba(0, 122, 255, 0.1)",
-  },
-  saveButton: {
-    color: "#007AFF",
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "System",
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
   },
 });

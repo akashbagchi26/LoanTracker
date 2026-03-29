@@ -6,7 +6,7 @@ import { AuthRequest } from "../types/AuthRequest";
 export const verifyLanderOwner = async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const userId = req.user?.id;
@@ -20,7 +20,7 @@ export const verifyLanderOwner = async (
     // Fetch only the lender IDs belonging to this user
     const lenders = await Lent.find(
       { user_id: new mongoose.Types.ObjectId(userId) },
-      { _id: 1 } // only return _id field
+      { _id: 1 }, // only return _id field
     ).lean();
 
     if (!lenders.length) {

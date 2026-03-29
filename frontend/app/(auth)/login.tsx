@@ -14,8 +14,14 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { Link } from "expo-router";
 import { useLogin } from "@/hooks/api/useAuth";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function LoginScreen() {
+  const theme = useColorScheme();
+  const colors = Colors[theme];
+
   const {
     control,
     handleSubmit,
@@ -30,93 +36,149 @@ export default function LoginScreen() {
   const { mutate: loginMutation, isPending, error } = useLogin();
 
   const onSubmit = (data: any) => {
-    // console.log("Logging in with", data);
     loginMutation(data);
   };
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
-          contentContainerStyle={styles.container}
+          contentContainerStyle={[
+            styles.container,
+            { backgroundColor: colors.background },
+          ]}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.title}>Loan Tracker</Text>
-          <Text style={styles.subtitle}>Login to your account</Text>
+          <View
+            style={[styles.iconBox, { backgroundColor: colors.primary + "15" }]}
+          >
+            <Ionicons name="wallet" size={48} color={colors.primary} />
+          </View>
+
+          <Text style={[styles.title, { color: colors.text }]}>
+            Loan Tracker
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.secondaryText }]}>
+            Precision in every transaction
+          </Text>
 
           <View style={styles.form}>
-            <Controller
-              control={control}
-              name="email"
-              rules={{
-                required: "Email is required",
-                pattern: {
-                  value: /^\S+@\S+\.\S+$/,
-                  message: "Enter a valid email address",
-                },
-              }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor="#aaa"
-                  onChangeText={onChange}
-                  value={value}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.secondaryText }]}>
+                Email Address
+              </Text>
+              <Controller
+                control={control}
+                name="email"
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Enter a valid email address",
+                  },
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: colors.card,
+                        borderColor: colors.border,
+                        color: colors.text,
+                      },
+                    ]}
+                    placeholder="name@example.com"
+                    placeholderTextColor={colors.secondaryText}
+                    onChangeText={onChange}
+                    value={value}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                )}
+              />
+              {errors.email && (
+                <Text style={[styles.fieldError, { color: colors.error }]}>
+                  {errors.email.message}
+                </Text>
               )}
-            />
-            {errors.email && (
-              <Text style={styles.fieldError}>{errors.email.message}</Text>
-            )}
+            </View>
 
-            <Controller
-              control={control}
-              name="password"
-              rules={{ required: "Password is required" }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Password"
-                  placeholderTextColor="#aaa"
-                  secureTextEntry
-                  onChangeText={onChange}
-                  value={value}
-                />
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.secondaryText }]}>
+                Password
+              </Text>
+              <Controller
+                control={control}
+                name="password"
+                rules={{ required: "Password is required" }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: colors.card,
+                        borderColor: colors.border,
+                        color: colors.text,
+                      },
+                    ]}
+                    placeholder="••••••••"
+                    placeholderTextColor={colors.secondaryText}
+                    secureTextEntry
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
+              />
+              {errors.password && (
+                <Text style={[styles.fieldError, { color: colors.error }]}>
+                  {errors.password.message}
+                </Text>
               )}
-            />
-            {errors.password && (
-              <Text style={styles.fieldError}>{errors.password.message}</Text>
-            )}
+            </View>
 
             <TouchableOpacity
-              style={styles.button}
+              activeOpacity={0.8}
+              style={[styles.button, { backgroundColor: colors.primary }]}
               onPress={handleSubmit(onSubmit)}
               disabled={isPending}
             >
               {isPending ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonText}>Sign In</Text>
               )}
             </TouchableOpacity>
 
             {error && (
-              <Text style={styles.serverError}>
-                {(error as any)?.data?.error ||
-                  "Login failed. Please try again."}
-              </Text>
+              <View
+                style={[
+                  styles.serverErrorBox,
+                  {
+                    backgroundColor: colors.error + "15",
+                    borderColor: colors.error,
+                  },
+                ]}
+              >
+                <Text style={[styles.serverError, { color: colors.error }]}>
+                  {(error as any)?.data?.error ||
+                    "Login failed. Please try again."}
+                </Text>
+              </View>
             )}
 
             <Link href="/register" asChild>
-              <TouchableOpacity>
-                <Text style={styles.link}>
-                  Don&apos;t have an account? Register
+              <TouchableOpacity style={styles.footerLink}>
+                <Text
+                  style={[styles.linkText, { color: colors.secondaryText }]}
+                >
+                  New to Loan Tracker?{" "}
+                  <Text style={{ color: colors.primary, fontWeight: "700" }}>
+                    Create Account
+                  </Text>
                 </Text>
               </TouchableOpacity>
             </Link>
@@ -129,70 +191,92 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 24,
+    flexGrow: 1,
+    padding: 32,
     justifyContent: "center",
-    backgroundColor: "#f8f9fa",
+  },
+  iconBox: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+    marginBottom: 24,
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontWeight: "900",
     textAlign: "center",
-    marginBottom: 8,
-    color: "#222",
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
     textAlign: "center",
-    marginBottom: 24,
-    color: "#666",
+    marginBottom: 40,
+    fontWeight: "600",
   },
   form: {
     width: "100%",
   },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 8,
+    marginLeft: 4,
+  },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 12,
+    padding: 16,
+    borderRadius: 16,
     fontSize: 16,
+    fontWeight: "600",
   },
   button: {
-    backgroundColor: "#007bff",
-    padding: 14,
-    borderRadius: 10,
+    height: 56,
+    borderRadius: 16,
     alignItems: "center",
-    marginTop: 8,
+    justifyContent: "center",
+    marginTop: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "800",
+  },
+  footerLink: {
+    marginTop: 24,
+    alignItems: "center",
+  },
+  linkText: {
+    fontSize: 14,
     fontWeight: "600",
   },
-  link: {
-    marginTop: 16,
-    textAlign: "center",
-    color: "#007bff",
-    fontSize: 14,
-  },
   fieldError: {
-    color: "#d32f2f",
-    marginBottom: 8,
-    fontSize: 13,
+    marginTop: 6,
+    fontSize: 12,
+    fontWeight: "700",
     marginLeft: 4,
   },
-  serverError: {
-    backgroundColor: "#ffe5e5",
-    color: "#d32f2f",
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 12,
-    fontSize: 14,
-    fontWeight: "500",
+  serverErrorBox: {
+    padding: 12,
+    borderRadius: 12,
+    marginTop: 20,
     borderWidth: 1,
-    borderColor: "#f5c2c7",
+  },
+  serverError: {
+    fontSize: 13,
+    fontWeight: "700",
     textAlign: "center",
   },
 });

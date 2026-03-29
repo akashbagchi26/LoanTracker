@@ -7,7 +7,7 @@ export const getBorrower = async (): Promise<Borrower[]> => {
 };
 
 export const createBorrower = async (
-  data: CreateBorrower
+  data: CreateBorrower,
 ): Promise<Borrower> => {
   const response = await apiClient.post("/lents", data);
   return response.data;
@@ -17,7 +17,7 @@ export const searchBorrower = async (data: string): Promise<Borrower[]> => {
   const query = data.trim() ? data : '""';
 
   const response = await apiClient.get<Borrower[]>(
-    `/lents/search?q=${encodeURIComponent(query)}`
+    `/lents/search?q=${encodeURIComponent(query)}`,
   );
   return response.data;
 };

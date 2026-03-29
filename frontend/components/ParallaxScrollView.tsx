@@ -1,23 +1,19 @@
-import type { PropsWithChildren, ReactElement } from 'react';
-import {
-  Platform,
-  StyleSheet,
-  View
-} from 'react-native';
+import type { PropsWithChildren, ReactElement } from "react";
+import { Platform, StyleSheet, View } from "react-native";
 import Animated, {
   Extrapolation,
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
-import { ThemedView } from '@/components/ThemedView';
-import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemedView } from "@/components/ThemedView";
+import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 const HEADER_HEIGHT = 200;
-const MIN_HEADER_HEIGHT = Platform.OS === 'ios' ? 88 : 64;
+const MIN_HEADER_HEIGHT = Platform.OS === "ios" ? 88 : 64;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
@@ -29,7 +25,7 @@ export default function ParallaxScrollView({
   headerImage,
   headerBackgroundColor,
 }: Props) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
@@ -39,21 +35,21 @@ export default function ParallaxScrollView({
       scrollOffset.value,
       [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
       [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     const scale = interpolate(
       scrollOffset.value,
       [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
       [1.5, 1, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     const opacity = interpolate(
       scrollOffset.value,
       [0, HEADER_HEIGHT / 2, HEADER_HEIGHT],
       [1, 0.5, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     return {
@@ -67,7 +63,7 @@ export default function ParallaxScrollView({
       scrollOffset.value,
       [0, HEADER_HEIGHT - MIN_HEADER_HEIGHT],
       [HEADER_HEIGHT, MIN_HEADER_HEIGHT],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     return {
@@ -93,11 +89,12 @@ export default function ParallaxScrollView({
         ref={scrollRef}
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ bottom }}
-        contentContainerStyle={{ paddingTop: HEADER_HEIGHT, paddingBottom: bottom }}
+        contentContainerStyle={{
+          paddingTop: HEADER_HEIGHT,
+          paddingBottom: bottom,
+        }}
       >
-        <ThemedView style={styles.content}>
-          {children}
-        </ThemedView>
+        <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </View>
   );
@@ -108,16 +105,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    overflow: 'hidden',
+    overflow: "hidden",
     zIndex: 10,
   },
   headerImage: {
     height: HEADER_HEIGHT,
-    width: '100%',
+    width: "100%",
   },
   content: {
     flex: 1,

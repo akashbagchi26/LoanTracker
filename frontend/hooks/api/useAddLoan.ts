@@ -9,13 +9,17 @@ export const useAddLoan = () => {
 
   return useMutation({
     mutationFn: createLoan,
-    onSuccess: (newlyCreatedLoan) => {
-      addLoan(newlyCreatedLoan);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["loans"] });
-      router.replace("/(protected)/(tabs)/loan");
+      queryClient.invalidateQueries({ queryKey: ["stats"] }); // Also refresh stats on dashboard
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/(protected)/(tabs)/loan");
+      }
     },
-    onError: (error) => {
-      console.error("Failed to create loan:", error.message);
+    onError: (error: any) => {
+      console.error("Failed to create loan:", error?.message || error);
     },
   });
 };

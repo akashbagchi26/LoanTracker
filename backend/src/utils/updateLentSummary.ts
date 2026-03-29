@@ -6,12 +6,12 @@ export async function updateLentOutstanding(lenderId: string) {
 
   const totalOutstanding = loans.reduce(
     (sum, loan) => sum + (loan.loan_amount_details?.total_outstanding || 0),
-    0
+    0,
   );
   const activeLoan = loans.length;
   const totalMonthlyDue = loans.reduce(
     (sum, loan) => sum + (loan.repayment_details?.emi_amount || 0),
-    0
+    0,
   );
 
   await Lent.findByIdAndUpdate(lenderId, {

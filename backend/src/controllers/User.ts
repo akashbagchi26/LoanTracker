@@ -29,7 +29,7 @@ export const loginUser = async (req: Request, res: Response) => {
       process.env.JWT_SECRET!,
       process.env.JWT_EXPIRATION
         ? { expiresIn: process.env.JWT_EXPIRATION }
-        : undefined
+        : undefined,
     );
 
     res.status(200).json({

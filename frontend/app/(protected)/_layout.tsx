@@ -16,9 +16,11 @@ import Header from "@/components/Header";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { loadAuthToken } from "@/store/authStore";
 import { useAuth } from "@/hooks/api/useAuth";
+import { Colors } from "@/constants/Colors";
 
 export default function ProtectedLayout() {
   const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme as "light" | "dark"];
   const [loaded] = useFonts({
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -31,8 +33,15 @@ export default function ProtectedLayout() {
 
   if (status === "loading" || !loaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: themeColors.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={themeColors.primary} />
       </View>
     );
   }
@@ -56,7 +65,7 @@ export default function ProtectedLayout() {
             <Stack.Screen name="(profile)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-          <StatusBar style="auto" />
+          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
         </ThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

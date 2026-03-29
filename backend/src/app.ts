@@ -39,7 +39,7 @@ app.use(
     const status: number = error.statusCode || 500;
     const message: string = error.message || "Internal Server Error";
     res.status(status).json({ message });
-  }
+  },
 );
 
 export default app;

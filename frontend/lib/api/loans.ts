@@ -12,28 +12,29 @@ export const getLoans = async (filter: Record<string, any> = {}) => {
     params: filter,
   });
 
+  const rawData = response.data.Data || response.data.data || response.data;
   return {
-    loans: response.data.data,
-    pagination: response.data.pagination,
+    loans: rawData.loans || rawData,
+    pagination: rawData.pagination,
   };
 };
 
 export const getLoanById = async (id: string) => {
   const response: any = await apiClient.get(`/loans/${id}`);
-  return response.data;
+  return response.data.Data || response.data.data || response.data;
 };
 
 export const createLoan = async (data: LoanForm): Promise<CreateLoan> => {
   const response = await apiClient.post("/loans", data);
-  return response.data;
+  return response.data.Data || response.data.data || response.data;
 };
 
 export const updateLoan = async (
   loanId: string,
   data: LoanForm,
 ): Promise<UpdateLoanForm> => {
-  const response = await apiClient.post(`/loans${loanId}`, data);
-  return response.data;
+  const response = await apiClient.post(`/loans/${loanId}`, data);
+  return response.data.Data || response.data.data || response.data;
 };
 
 export const prepayLoan = async (
@@ -41,5 +42,5 @@ export const prepayLoan = async (
   amount: number,
 ): Promise<PrepayLoanResponse> => {
   const response = await apiClient.post(`/loans/${loanId}/prepay`, { amount });
-  return response.data;
+  return response.data.Data || response.data.data || response.data;
 };

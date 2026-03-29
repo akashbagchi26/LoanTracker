@@ -23,14 +23,21 @@ export interface LoginData {
 }
 
 export const login = async (
-  credentials: LoginCredentials
+  credentials: LoginCredentials,
 ): Promise<LoginData> => {
   const response = await apiClient.post("/users/login", credentials);
-  return response.data.Data;
+  const data = response.data.Data || response.data.data || response.data;
+
+  // Normalize potentially capitalized keys
+  return {
+    token: data.token || data.Token,
+    user: data.user || data.User,
+  };
 };
 
 // You can add register, forgotPassword, etc. functions here as well
 export const register = async (data: any) => {
   const response = await apiClient.post("/users/register", data);
-  return response.data;
+  const resData = response.data.Data || response.data.data || response.data;
+  return resData;
 };

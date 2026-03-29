@@ -5,7 +5,7 @@ import { AuthRequest } from "../types/AuthRequest";
 export const authenticateToken = (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = req.headers.authorization;
 

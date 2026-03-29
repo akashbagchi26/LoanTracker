@@ -15,6 +15,7 @@ import {
   Text,
   TextInputFocusEventData,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { TextInput, TextInputProps } from "react-native-paper";
 import BottomSheet, {
@@ -23,6 +24,9 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { usePrepayLoan } from "@/hooks/api/usePrepayLoan";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 /* -------------------- CUSTOM INPUT -------------------- */
 
@@ -78,6 +82,8 @@ export interface MyBottomSheetProps {
 export const MyBottomSheet = forwardRef<BottomSheetMethods, MyBottomSheetProps>(
   (props, ref) => {
     const { loanId, prePaid, loanType } = props;
+    const theme = useColorScheme();
+    const colors = Colors[theme];
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const inputRef = useRef<RNTextInput>(null);
@@ -155,38 +161,76 @@ export const MyBottomSheet = forwardRef<BottomSheetMethods, MyBottomSheetProps>(
         onChange={handleSheetChanges}
         keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"
-        handleIndicatorStyle={styles.handle}
-        backgroundStyle={styles.sheetBackground}
+        handleIndicatorStyle={[
+          styles.handle,
+          { backgroundColor: colors.border },
+        ]}
+        backgroundStyle={[
+          styles.sheetBackground,
+          { backgroundColor: colors.background },
+        ]}
         enableOverDrag={false}
       >
         <BottomSheetView style={styles.contentContainer}>
-          <Text style={styles.heading}>💰 How Much Have You Paid?</Text>
+          <Text style={[styles.heading, { color: colors.text }]}>
+            Record Payment
+          </Text>
+          <Text style={[styles.subheading, { color: colors.secondaryText }]}>
+            Confirm the transaction amount
+          </Text>
 
           <CustomBottomSheetTextInput
             label="Pending Due"
             mode="outlined"
             editable={false}
-            value={prePaid.toString()}
-            style={styles.input}
-            contentStyle={styles.inputContent}
+            value={`₹${prePaid.toLocaleString()}`}
+            style={[styles.input, { backgroundColor: colors.surface }]}
+            textColor={colors.text}
+            outlineColor={colors.border}
+            activeOutlineColor={colors.primary}
+            theme={{
+              colors: {
+                primary: colors.primary,
+                onSurfaceVariant: colors.secondaryText,
+              },
+            }}
           />
 
           {loanType !== "emi" && (
             <CustomBottomSheetTextInput
               ref={inputRef}
               label="Custom Amount"
+              placeholder="e.g. 5000"
               mode="outlined"
               keyboardType="numeric"
               value={customAmount}
               onChangeText={handleCustomAmountChange}
-              style={styles.input}
-              contentStyle={styles.inputContent}
+              style={[styles.input, { backgroundColor: colors.card }]}
+              textColor={colors.text}
+              outlineColor={colors.border}
+              activeOutlineColor={colors.primary}
+              theme={{
+                colors: {
+                  primary: colors.primary,
+                  onSurfaceVariant: colors.secondaryText,
+                },
+              }}
             />
           )}
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: colors.primary }]}
+            onPress={handleSubmit}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name="card"
+              size={20}
+              color="#fff"
+              style={{ marginRight: 8 }}
+            />
             <Text style={styles.buttonText}>
-              {loanType === "emi" ? "Pay EMI" : "Submit Payment"}
+              {loanType === "emi" ? "Confirm EMI Payment" : "Submit Payment"}
             </Text>
           </TouchableOpacity>
         </BottomSheetView>
@@ -201,47 +245,53 @@ MyBottomSheet.displayName = "MyBottomSheet";
 
 const styles = StyleSheet.create({
   sheetBackground: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
   },
   handle: {
-    backgroundColor: "#ccc",
     height: 5,
-    width: 40,
-    borderRadius: 2.5,
+    width: 44,
+    borderRadius: 10,
     alignSelf: "center",
-    marginVertical: 8,
+    marginVertical: 12,
   },
   contentContainer: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-    gap: 16,
+    paddingHorizontal: 28,
+    paddingBottom: 40,
   },
   heading: {
-    fontSize: 18,
+    fontSize: 22,
+    fontWeight: "800",
+    textAlign: "center",
+    marginTop: 8,
+    letterSpacing: -0.5,
+  },
+  subheading: {
+    fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
-    color: "#333",
+    marginBottom: 24,
+    marginTop: 4,
   },
   input: {
-    backgroundColor: "#fff",
-  },
-  inputContent: {
-    fontSize: 16,
-    paddingVertical: 14,
+    marginBottom: 16,
   },
   button: {
-    backgroundColor: "#2E7D32",
-    paddingVertical: 14,
-    borderRadius: 12,
+    height: 58,
+    borderRadius: 18,
     alignItems: "center",
-    marginTop: 8,
-    marginBottom: 30,
+    justifyContent: "center",
+    flexDirection: "row",
+    marginTop: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "600",
+    fontWeight: "800",
     fontSize: 16,
   },
 });

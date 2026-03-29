@@ -26,6 +26,6 @@ export const borrowerStore = create<LoanStore>()(
       name: "loan-storage",
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({ borrowers: state.borrowers }),
-    }
-  )
+    },
+  ),
 );
