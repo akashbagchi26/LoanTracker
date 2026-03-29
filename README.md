@@ -16,29 +16,29 @@
     <tr>
       <td align="center" width="33%">
         <img src="./docs/assets/dashboard.png" width="240" alt="Dashboard"/>
-        <p><b>Performance Dashboard</b><br/>Real-time financial summaries and metrics.</p>
+        <p>>Real-time financial summaries and metrics.</p>
       </td>
       <td align="center" width="33%">
         <img src="./docs/assets/loan_management.png" width="240" alt="Loan Management"/>
-        <p><b>Core Management</b><br/>Track Active, Upcoming, and Closed loans.</p>
+        <p>Track Active, Upcoming, and Closed loans.</p>
       </td>
       <td align="center" width="33%">
         <img src="./docs/assets/add_loan.png" width="240" alt="Add Loan"/>
-        <p><b>Loan Submission</b><br/>Comprehensive form for new loan entries.</p>
+        <p>Comprehensive form for new loan entries.</p>
       </td>
     </tr>
     <tr>
       <td align="center" width="33%">
         <img src="./docs/assets/borrower_list.png" width="240" alt="Borrower List"/>
-        <p><b>Borrower Directory</b><br/>Manage your lending contacts and history.</p>
+        <p>Manage your lending contacts and history.</p>
       </td>
       <td align="center" width="33%">
         <img src="./docs/assets/profile_settings.png" width="240" alt="Profile Settings"/>
-        <p><b>User Preferences</b><br/>Premium profile and theme customization.</p>
+        <p>profile and theme customization.</p>
       </td>
       <td align="center" width="33%">
         <img src="./docs/assets/repayment_option.png" width="240" alt="Profile Settings"/>
-        <p><b>User Preferences</b><br/>Re-payment Option.</p>
+        <p>Re-payment Option.</p>
       </td>
       <td align="center" width="33%">
         <!-- Grid Spacer -->
